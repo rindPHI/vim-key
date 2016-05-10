@@ -15,7 +15,7 @@ integration for .key files (input files for the interactive program verification
 Choose one of the subsequent methods:
 
 * "Vanilla-VIM" method:  
-  Unzip the directories `ftdetect`, `ftplugin` and `syntax` into your `.vim` directory
+  Unzip the directories `ftdetect`, `ftplugin`, `ctags` and `syntax` into your `.vim` directory
 * Using Vundle (RECOMMENDED):  
   1. Add the line `Plugin 'rindPHI/vim-key'` to your `.vimrc`, `.vimrc.bundles` or `.vimrc.bundles.local`
   2. Run `:PluginInstall` from inside VIMPlugin Plugin 
