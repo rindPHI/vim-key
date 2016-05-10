@@ -60,3 +60,6 @@ syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuris
 hi def link keyRuleKeywords Macro
 
 let b:current_syntax = "key"
+
+" Fold
+set foldmethod=syntax

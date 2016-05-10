@@ -1,0 +1,4 @@
+--langdef=key
+--langmap=key:.key
+
+--regex-key=/^[ \t]*\\rules[ \t]*\(([^\)]*)\).*$/Rules: \1/r,rules
