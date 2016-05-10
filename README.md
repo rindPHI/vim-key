@@ -4,9 +4,11 @@ Provides syntax highlighting, folding and [Tagbar](https://github.com/majutsushi
 integration for .key files (input files for the interactive program verification tool
 [KeY](http://key-project.org/)).
 
-## Screenshot
+## Screenshots
 
 ![Screenshot](Screenshot.png?raw=true)
+
+![Screenshot](Screenshot_2.png?raw=true)
 
 ## Installation Instructions
 
