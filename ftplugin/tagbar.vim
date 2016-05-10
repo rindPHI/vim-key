@@ -10,7 +10,6 @@ let g:tagbar_type_key = {
         \ 'r:rules',
         \ 's:sorts',
         \ 'v:schemavariables'
-
     \ ],
     \ 'deffile' : expand('<sfile>:p:h:h') . '/ctags/key.ctags'
 \ }
