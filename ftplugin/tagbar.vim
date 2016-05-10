@@ -7,9 +7,7 @@ endif
 let g:tagbar_type_key = {
     \ 'ctagstype' : 'key',
     \ 'kinds' : [
-        \ 's:sorts',
-        \ 'p:predicates',
-        \ 'f:functions',
+        \ 's:symbols',
         \ 'v:schemavariables',
         \ 'r:rules'
     \ ],
