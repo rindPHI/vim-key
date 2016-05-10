@@ -18,6 +18,6 @@ Choose one of the subsequent methods:
   Unzip the directories `ftdetect`, `ftplugin`, `ctags` and `syntax` into your `.vim` directory
 * Using Vundle (RECOMMENDED):  
   1. Add the line `Plugin 'rindPHI/vim-key'` to your `.vimrc`, `.vimrc.bundles` or `.vimrc.bundles.local`
-  2. Run `:PluginInstall` from inside VIMPlugin Plugin 
+  2. Run `:PluginInstall` from inside VIM
 * Using Pathogen:  
   Unzip the whole repository into a subdirectory of your `.vim/bundles/`
