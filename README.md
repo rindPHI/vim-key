@@ -9,7 +9,7 @@ Choose one of the subsequent methods:
 
 * "Vanilla-VIM" method:  
   Unzip the directories `ftdetect` and `syntax` into your `.vim` directory
-* Using Vundle:  
+* Using Vundle (RECOMMENDED):  
   1. Add the line `Plugin 'rindPHI/vim-key'` to your `.vimrc`, `.vimrc.bundles` or `.vimrc.bundles.local`
   2. Run `:PluginInstall` from inside VIMPlugin Plugin 
 * Using Pathogen:  
