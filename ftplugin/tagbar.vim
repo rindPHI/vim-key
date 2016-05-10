@@ -7,7 +7,10 @@ endif
 let g:tagbar_type_key = {
     \ 'ctagstype' : 'key',
     \ 'kinds' : [
-        \ 'r:rules'
+        \ 'r:rules',
+        \ 's:sorts',
+        \ 'v:schemavariables'
+
     \ ],
-    \ 'deffile'   : expand('<sfile>:p:h:h') . '/ctags/key.ctags'
+    \ 'deffile' : expand('<sfile>:p:h:h') . '/ctags/key.ctags'
 \ }
