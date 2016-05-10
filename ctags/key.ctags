@@ -1,9 +1,9 @@
 --langdef=key
 --langmap=key:.key
 
---regex-key=/^[ \t]*\\schemaVariables.*$/Schema Variables Definitions/v,schemavariables/
---regex-key=/^[ \t]*\\(predicates).*$/Predicate Definitions/s,symbols/
---regex-key=/^[ \t]*\\(functions).*$/Function Definitions/s,symbols/
---regex-key=/^[ \t]*\\(sorts).*$/Sort Definitions/s,symbols/
---regex-key=/^[ \t]*\\rules[^\(\)]*$/Unscoped Rules/r,rules/
---regex-key=/^[ \t]*\\rules[ \t]*\(([^\)]*)\).*$/\1/r,rules/
+--regex-key=/^[ \t]*\\schemaVariables.*$/Schema Variable Definitions/v/
+--regex-key=/^[ \t]*\\(predicates).*$/Predicate Definitions/s/
+--regex-key=/^[ \t]*\\(functions).*$/Function Definitions/s/
+--regex-key=/^[ \t]*\\(sorts).*$/Sort Definitions/s/
+--regex-key=/^[ \t]*\\rules[^\(\)]*$/Unscoped Rules/r/
+--regex-key=/^[ \t]*\\rules[ \t]*\(([^\)]*)\).*$/\1/r/
