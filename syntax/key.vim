@@ -11,6 +11,12 @@ syn region keyMLComment start=/\/\*/ end=/\*\//
 syn match  keyInclude "\\include"
 hi def link keyInclude Include
 
+" Predicates and functions declaration
+syn match  keyPredsDecl /\\\(predicates\|functions\)\s*/ nextgroup=keyPredsBlock
+syn region keyPredsBlock start=/{/ end=/}/ fold contained
+
+hi def link keyPredsDecl Statement
+
 " Sorts declaration
 syn match  keySortsDecl /\\sorts\s*/ nextgroup=keySortsBlock
 syn region keySortsBlock start=/{/ end=/}/ fold  contains=keySortDecl contained
