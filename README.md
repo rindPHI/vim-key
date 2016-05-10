@@ -1,4 +1,4 @@
-# vim-key: Syntax Highlighting / Folding for KeY Files
+# vim-key
 
 Provides syntax highlighting, folding and [Tagbar](https://github.com/majutsushi/tagbar/)
 integration for .key files (input files for the interactive program verification tool
