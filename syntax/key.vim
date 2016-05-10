@@ -58,3 +58,5 @@ hi def link keySVIdentifier Identifier
 syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuristics\|endmodality\|varcond\|not\|hasSort\|isThisReference\|staticMethodReference\|displayname\|sameUpdateLevel\|schemaVar\|modalOperator\)/ contained
 
 hi def link keyRuleKeywords Macro
+
+let b:current_syntax = "key"
