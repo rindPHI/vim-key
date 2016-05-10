@@ -1,7 +1,8 @@
 # vim-key: Syntax Highlighting / Folding for KeY Files
 
-Provides syntax highlighting and folding (via `:set foldmethod=syntax`) for .key files
-(input files for the interactive program verification tool [KeY](http://key-project.org/))
+Provides syntax highlighting, folding and [Tagbar](https://github.com/majutsushi/tagbar/)
+integration for .key files (input files for the interactive program verification tool
+[KeY](http://key-project.org/)).
 
 ## Installation Instructions
 
