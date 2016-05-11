@@ -5,12 +5,16 @@ if !exists(':Tagbar')
 endif
 
 let g:tagbar_type_key = {
-    \ 'ctagstype' : 'key',
+    \ 'ctagsbin' : expand('<sfile>:p:h:h') . '/ctags/KeYTags.jar',
+    \ 'ctagsargs' : '',
     \ 'kinds' : [
-        \ 's:Symbols',
+        \ 's:Sorts',
+        \ 'f:Functions',
+        \ 'p:Predicates',
         \ 'v:Schema Variables',
-        \ 'r:Rule Scopes'
+        \ 'c:Rule Scopes',
+        \ 'r:Rules',
     \ ],
-    \ 'deffile' : expand('<sfile>:p:h:h') . '/ctags/key.ctags',
-    \ 'sort' : 0
+    \ 'sort' : 1,
+    \ 'sro' : ' : '
 \ }
