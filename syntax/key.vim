@@ -11,7 +11,7 @@ syn region keyMLComment start=/\/\*/ end=/\*\//
 syn match  keyInclude "\\include"
 hi def link keyInclude Include
 
-syn match  keyTopLevelDirectives /\\\(javaSource\|chooseContract\|proofObligation\|bootclasspath\|problem\)/
+syn match  keyTopLevelDirectives /\\\(javaSource\|chooseContract\|proofObligation\|bootclasspath\|problem\|programVariables\)/
 hi def link keyTopLevelDirectives Statement
 
 syn match  keyString /"\_[^"]\{-}"/ 
