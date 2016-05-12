@@ -13,7 +13,8 @@ hi def link keyInclude Include
 
 " Predicates and functions declaration
 syn match  keyPredsDecl /\\\(predicates\|functions\)\s*/ nextgroup=keyPredsBlock
-syn region keyPredsBlock start=/{/ end=/}/ fold contained
+"syn region keyPredsBlock start=/{/ end=/;\_\s*}/ fold contained contains=keyComment,keyMultilineComment
+syn region keyPredsBlock start=/{/ end=/}/ skip=/{[^;]\+}/ fold contained contains=keyComment,keyMultilineComment
 
 hi def link keyPredsDecl Statement
 
