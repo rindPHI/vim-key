@@ -11,6 +11,11 @@ syn region keyMLComment start=/\/\*/ end=/\*\//
 syn match  keyInclude "\\include"
 hi def link keyInclude Include
 
+syn match  keyTopLevelDirectives /\\\(javaSource\|chooseContract\|proofObligation\|bootclasspath\)/
+hi def link keyTopLevelDirectives Statement
+
+syn match  keyString /"\_[^"]\{-}"/ 
+
 " Predicates and functions declaration
 syn match  keyPredsDecl /\\\(predicates\|functions\)\s*/ nextgroup=keyPredsBlock
 "syn region keyPredsBlock start=/{/ end=/;\_\s*}/ fold contained contains=keyComment,keyMultilineComment
@@ -38,7 +43,7 @@ hi def link keySVsDecl Statement
 
 " Rules declaration
 syn match  keyRulesDecl /\\rules\s*/ nextgroup=keyRulesScope
-syn match  keyRulesScope /([a-zA-Z]\+:[a-zA-Z]\+\(,\s*[a-zA-Z]\+:[a-zA-Z]\+\)*)\s*/ contained nextgroup=keyRulesBlock
+syn match  keyRulesScope /\(([a-zA-Z]\+:[a-zA-Z]\+\(,\s*[a-zA-Z]\+:[a-zA-Z]\+\)*)\)\?\s*/ contained nextgroup=keyRulesBlock
 syn region keyRulesBlock
   \ matchgroup=rulesBlockStart start=/\s*{/
   \ matchgroup=rulesBlockEnd end=/}\s*\n/
@@ -49,7 +54,6 @@ syn region keyRuleDeclBlock start=/{/ end=/};/ contained contains=keyComment,key
 syn region keyNestedBlock start=/([a-zA-Z]\+:[a-zA-Z]\+)\s*{/ end=/};/ contained transparent contains=keyInnerRulesScope,keyString,keySVIdentifier,keyRuleKeywords
 syn match  keyInnerRulesScope /([a-zA-Z]\+:[a-zA-Z]\+\(,\s*[a-zA-Z]\+:[a-zA-Z]\+\)*)\s*/ contained
 syn match  keyRuleName /[a-zA-Z0-9_]\+/ contained
-syn match  keyString /"[^"]\{-}"/ contained
 syn match  keySVIdentifier /#[a-zA-Z0-9]\+/ contained
 
 hi def link keyRulesDecl Statement
@@ -62,7 +66,7 @@ hi def link keySVIdentifier Identifier
 " hi def link rulesBlockEnd MatchParen
 
 " Taclet keywords
-syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuristics\|endmodality\|varcond\|not\|hasSort\|isThisReference\|staticMethodReference\|displayname\|sameUpdateLevel\|schemaVar\|modalOperator\|new\|typeof\)/ contained
+syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuristics\|endmodality\|varcond\|not\|hasSort\|isThisReference\|staticMethodReference\|displayname\|sameUpdateLevel\|schemaVar\|modalOperator\|new\|typeof\|term\)/ contained
 
 hi def link keyRuleKeywords Macro
 
