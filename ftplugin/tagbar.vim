@@ -11,6 +11,7 @@ let g:tagbar_type_key = {
         \ 's:Sorts',
         \ 'f:Functions',
         \ 'p:Predicates',
+        \ 'o:Program Variables',
         \ 'v:Schema Variables',
         \ 'c:Rule Scopes',
         \ 'r:Rules',

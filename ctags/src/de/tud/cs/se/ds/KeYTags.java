@@ -22,6 +22,8 @@ public class KeYTags {
     private static final String PREDICATES_KEYWORD = "\\predicates";
     private static final String SCHEMA_VARIABLES_TLT = "v";
     private static final String SCHEMA_VARIABLES_KEYWORD = "\\schemaVariables";
+    private static final String PROGRAM_VARIABLES_KEYWORD = "\\programVariables";
+    private static final String PROGRAM_VARIABLES_TLT = "o";
     private static final String SORTS_KEYWORD = "\\sorts";
     private static final String SORTS_TLT = "s";
     private static final String SEPARATOR = "\t";
@@ -29,7 +31,13 @@ public class KeYTags {
     private static final String FUNCTIONS_TLT = "f";
 
     private static enum Scopes {
-        TOP_LEVEL, SORTS, SORT, RULES, RULE, FUNCTIONS, FUNCTION, PREDICATES, PREDICATE, SCHEMA_VARIABLES, SCHEMA_VARIABLE, COMMENT
+        TOP_LEVEL, SORTS, SORT, RULES, RULE, FUNCTIONS, FUNCTION, PREDICATES, PREDICATE, SCHEMA_VARIABLES, SCHEMA_VARIABLE, PROGRAM_VARIABLES, PROGRAM_VARIABLE, COMMENT
+    }
+    
+    private File keyFile;
+    
+    public KeYTags(File keyFile) {
+        this.keyFile = keyFile;
     }
 
     /* Expected call structure:
@@ -56,8 +64,10 @@ public class KeYTags {
             System.err.println("Please supply the .key file to parse");
         }
         
+        final KeYTags instance = new KeYTags(keyFile);
+        
         try {
-            System.out.println(extractTagFileContent(keyFile));
+            System.out.println(instance.extractTagFileContent());
         }
         catch (IOException e) {
             System.err.println("Error while reading file '" + keyFile.getAbsolutePath() + "':");
@@ -65,7 +75,7 @@ public class KeYTags {
         }
     }
     
-    private static String extractTagFileContent(File keyFile) throws IOException {
+    private String extractTagFileContent() throws IOException {
         final StringBuilder sb = new StringBuilder();
         final BufferedReader br = new BufferedReader(new FileReader(keyFile));
         
@@ -110,7 +120,7 @@ public class KeYTags {
                 
                 if (part.equals("*/")) {
                     if (scope != Scopes.COMMENT) {
-                        System.err.println("Syntax error: Unbalanced multi-line comment at line " + lineNo);
+                        syntaxError("Unbalanced multi-line comment", lineNo);
                     }
                     
                     scope = scopeBeforeComment;
@@ -132,7 +142,7 @@ public class KeYTags {
                 }
                 
                 if (indent < 0) {
-                    System.err.println("Syntax error: Wrong balancing of braces at line " + lineNo);
+                    syntaxError("Wrong balancing of braces", lineNo);
                     indent = 0; // We try to go on...
                     continue;
                 }
@@ -163,18 +173,20 @@ public class KeYTags {
                         continue;
                     }
                     
+                    if (part.contains(PROGRAM_VARIABLES_KEYWORD)) {
+                        scope = Scopes.PROGRAM_VARIABLES;
+                        continue;
+                    }
+                    
                     if (part.contains(RULE_SCOPE_KEYWORD)) {
                         String tagName = RULE_SCOPE_UNSCOPED_LONG_NAME;
                         final Matcher scopeMatcher = Pattern.compile(".*\\(([^\\)]+)\\).*").matcher(part);
                         if (scopeMatcher.matches()) {
                             tagName = scopeMatcher.group(1);
                         }
-                        
-                        sb.append(tagName).append(SEPARATOR)
-                                .append(keyFile.getName()).append(SEPARATOR)
-                                .append("/^").append(escape(origLine)).append("$/;\"")
-                                .append(SEPARATOR).append(RULE_SCOPE_TLT).append(SEPARATOR)
-                                .append("line:").append(lineNo).append("\n");
+
+                        constructTagLine(sb, tagName, origLine,
+                                RULE_SCOPE_TLT, lineNo);
                         
                         scope = Scopes.RULES;
                         continue;
@@ -191,21 +203,16 @@ public class KeYTags {
                     Matcher m = Pattern.compile("\\s*(?:(\\S+)\\s+)?(\\S+)\\s*(\\\\extends\\s*\\S+)?;\\s*$").matcher(lineWoBreaks);
                     
                     if (!m.matches()) {
-                        System.err.println("Syntax error: Bad sort declaration: '" + lineWoBreaks + "' at line " + lineNo);
+                        syntaxError("Bad sort declaration", lineWoBreaks, lineNo);
                     }
 
                           String sortType = m.group(1) != null ? 
                                   (" : " + m.group(1).trim() + (m.group(3) != null ?
                                           " " + m.group(3).trim() : "")) : "";
                     final String sortName = m.group(2);
-                        
-                    sb.append(sortName).append(sortType)
-                            .append(SEPARATOR).append(keyFile.getName())
-                            .append(SEPARATOR).append("/^")
-                            .append(escape(origLine)).append("$/;\"")
-                            .append(SEPARATOR).append(SORTS_TLT)
-                            .append(SEPARATOR).append("line:")
-                            .append(lineNo).append("\n");
+
+                    constructTagLine(sb, sortName + sortType, origLine,
+                            SORTS_TLT, lineNo);
                     
                     break;
                 }
@@ -220,19 +227,14 @@ public class KeYTags {
                     Matcher m = Pattern.compile("^\\s*([^\\(]+)\\s*\\(([^\\)]+)\\)\\s*;\\s*$").matcher(lineWoBreaks);
                     
                     if (!m.matches()) {
-                        System.err.println("Syntax error: Bad predicate declaration: '" + lineWoBreaks + "' at line " + lineNo);
+                        syntaxError("Bad predicate declaration", lineWoBreaks, lineNo);
                     }
 
                           String predicateType = m.group(2).replaceAll("\\s*", "");
                     final String predicateName = m.group(1);
-                        
-                    sb.append(predicateName).append(" : ").append(predicateType)
-                            .append(SEPARATOR).append(keyFile.getName())
-                            .append(SEPARATOR).append("/^")
-                            .append(escape(origLine)).append("$/;\"")
-                            .append(SEPARATOR).append(PREDICATES_TLT)
-                            .append(SEPARATOR).append("line:")
-                            .append(lineNo).append("\n");
+
+                    constructTagLine(sb, predicateName + " : " + predicateType, origLine,
+                            PREDICATES_TLT, lineNo);
                     
                     break;
                 }
@@ -247,20 +249,38 @@ public class KeYTags {
                     Matcher m = Pattern.compile("^\\s*(?:\\\\\\S+)?\\s*([a-zA-Z_0-9]+)\\s*([a-zA-Z_0-9]+)(?:\\{[^\\}]+\\})?\\s*(?:\\(([^\\)]+)\\))?\\s*;\\s*$").matcher(lineWoBreaks);
                     
                     if (!m.matches()) {
-                        System.err.println("Syntax error: Bad function declaration: '" + lineWoBreaks + "' at line " + lineNo);
+                        syntaxError("Bad function declaration", lineWoBreaks, lineNo);
                     }
 
-                          String functionType = (m.group(3) == null ? "" :
-                              m.group(3).replaceAll("\\s+", "") + " -> ") + m.group(1);
+                    String functionType = (m.group(3) == null ? "" : m.group(3)
+                            .replaceAll("\\s+", "") + " -> ")
+                            + m.group(1);
                     final String functionName = m.group(2);
-                        
-                    sb.append(functionName).append(" : ").append(functionType)
-                            .append(SEPARATOR).append(keyFile.getName())
-                            .append(SEPARATOR).append("/^")
-                            .append(escape(origLine)).append("$/;\"")
-                            .append(SEPARATOR).append(FUNCTIONS_TLT)
-                            .append(SEPARATOR).append("line:")
-                            .append(lineNo).append("\n");
+
+                    constructTagLine(sb, functionName + " : " + functionType, origLine,
+                            FUNCTIONS_TLT, lineNo);
+                    
+                    break;
+                }
+                
+                // PROGRAM VARIABLE DECLARATIONS //
+                if (scope == Scopes.PROGRAM_VARIABLE && indent == 1) {
+                    scope = Scopes.PROGRAM_VARIABLES;
+                }
+                
+                if (scope == Scopes.PROGRAM_VARIABLES && indent == 1) {
+                    final String lineWoBreaks = line.replace("\n", "");
+                    Matcher m = Pattern.compile("^\\s*([a-zA-Z_0-9]+)\\s*([a-zA-Z_0-9]+)\\s*;\\s*$").matcher(lineWoBreaks);
+                    
+                    if (!m.matches()) {
+                        syntaxError("Bad program variable declaration", lineWoBreaks, lineNo);
+                    }
+
+                    String       pvType = m.group(1);
+                    final String pvName = m.group(2);
+
+                    constructTagLine(sb, pvName + " : " + pvType, origLine,
+                            PROGRAM_VARIABLES_TLT, lineNo);
                     
                     break;
                 }
@@ -275,7 +295,7 @@ public class KeYTags {
                     Matcher m = Pattern.compile("^\\s*(\\\\[a-zA-Z\\[\\]]+\\s*(?:\\{[^\\}]+\\})?)([^;]+);\\s*$").matcher(lineWoBreaks);
                     
                     if (!m.matches()) {
-                        System.err.println("Syntax error: Bad schema variable declaration: '" + lineWoBreaks + "' at line " + lineNo);
+                        syntaxError("Bad schema variable declaration", lineWoBreaks, lineNo);
                     }
 
                           String   svType  = m.group(1).trim();
@@ -289,14 +309,9 @@ public class KeYTags {
                             svType += " " + svNameParts[0];
                             svName = svNameParts[1];
                         }
-                        
-                        sb.append(svName).append(" : ").append(svType)
-                                .append(SEPARATOR).append(keyFile.getName())
-                                .append(SEPARATOR).append("/^")
-                                .append(escape(origLine)).append("$/;\"")
-                                .append(SEPARATOR).append(SCHEMA_VARIABLES_TLT)
-                                .append(SEPARATOR).append("line:")
-                                .append(lineNo).append("\n");
+
+                        constructTagLine(sb, svName + " : " + svType, origLine,
+                                SCHEMA_VARIABLES_TLT, lineNo);
                     }
                     
                     scope = Scopes.SCHEMA_VARIABLE;
@@ -310,15 +325,10 @@ public class KeYTags {
                 
                 if (scope == Scopes.RULES && indent == 1) {
                     if (!Pattern.compile("[a-zA-Z_0-9]+").matcher(part).matches()) {
-                        System.err.println("Syntax error: Bad rule name '" + part + "' at line " + lineNo);
+                        syntaxError("Bad rule name", part, lineNo);
                     }
-                    
-                    sb.append(part).append(SEPARATOR).append(keyFile.getName())
-                            .append(SEPARATOR).append("/^")
-                            .append(escape(origLine)).append("$/;\"")
-                            .append(SEPARATOR).append(RULE_TLT)
-                            .append(SEPARATOR).append("line:").append(lineNo)
-                            .append("\n");
+
+                    constructTagLine(sb, part, origLine, RULE_TLT, lineNo);
                     
                     scope = Scopes.RULE;
                     continue;
@@ -331,7 +341,31 @@ public class KeYTags {
         return sb.toString();
     }
     
-    private static String escape(String str) {
+    private void constructTagLine(StringBuilder sb, String tagName,
+            String lineExpr, String tagType, int lineNo) {
+        sb.append(tagName).append(SEPARATOR).append(keyFile.getName())
+                .append(SEPARATOR).append("/^").append(escape(lineExpr))
+                .append("$/;\"").append(SEPARATOR).append(tagType)
+                .append(SEPARATOR).append("line:").append(lineNo).append("\n");
+    }
+    
+    private void syntaxError(String descr, int lineNo) {
+        syntaxError(descr, null, lineNo);
+    }
+    
+    private void syntaxError(String descr, String causedBy, int lineNo) {
+        String msg = "Syntax error: " + descr;
+        
+        if (causedBy != null) {
+            msg += " '" + causedBy + "'";
+        }
+        
+        msg += " at line " + lineNo;
+        
+        System.err.println(msg);
+    }
+    
+    private String escape(String str) {
         final String[] toReplace = {
                 "\\"
         };
@@ -343,7 +377,7 @@ public class KeYTags {
         return str;
     }
     
-    static class Pair<A, B> {
+    class Pair<A, B> {
         private A first;
         private B second;
         
