@@ -66,7 +66,7 @@ hi def link keySVIdentifier Identifier
 " hi def link rulesBlockEnd MatchParen
 
 " Taclet keywords
-syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuristics\|endmodality\|varcond\|not\|hasSort\|isThisReference\|staticMethodReference\|displayname\|sameUpdateLevel\|schemaVar\|modalOperator\|new\|typeof\|term\|update\)/ contained
+syn match keyRuleKeywords /\\\(find\|assumes\|modality\|replacewith\|add\|heuristics\|endmodality\|varcond\|not\|hasSort\|isThisReference\|staticMethodReference\|displayname\|sameUpdateLevel\|schemaVar\|modalOperator\|new\|typeof\|term\|update\|formula\)/ contained
 
 hi def link keyRuleKeywords Macro
 
